@@ -12,9 +12,11 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.2.0",
     "@libsql/client": "^0.15.15",
     "@nuxt/eslint": "1.15.1",
     "@nuxt/hints": "1.0.0-alpha.6",
+    "@nuxt/icon": "2.2.1",
     "@nuxthub/core": "0.10.6",
     "drizzle-kit": "^0.31.7",
     "drizzle-orm": "^0.44.7",

@@ -212,7 +212,7 @@ async function procesarVenta() {
   finally { procesando.value = false }
 }
 
-const fmt = (n: any) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(Number(n) || 0)
+const fmt = (n: any) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'CUP', maximumFractionDigits: 0 }).format(Number(n) || 0)
 const toasts = ref<{id:number;msg:string;type:string}[]>([])
 let tid = 0
 function toast(msg: string, type = 'success') { const id = tid++; toasts.value.push({id,msg,type}); setTimeout(() => toasts.value = toasts.value.filter(t=>t.id!==id), 3500) }

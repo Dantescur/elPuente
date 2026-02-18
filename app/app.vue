@@ -10,8 +10,8 @@
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
         </div>
-        <span class="text-[17px] font-extrabold tracking-tight">HUB<em
-            class="text-violet-400 not-italic">store</em></span>
+        <span class="text-[17px] font-extrabold tracking-tight">KOI<em
+            class="text-violet-400 not-italic">track</em></span>
       </div>
 
       <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
@@ -48,7 +48,11 @@ v-for="item in navItems" :key="item.to" :to="item.to"
 </template>
 
 <script setup lang="ts">
-import { defineComponent, h } from 'vue'
+import { barIcon } from './components/BarIcon';
+import { cartIcon } from './components/CartIcon';
+import { gridIcon } from './components/GridIcon';
+import { movimientosIcon } from './components/MovimientosIcon';
+import { icon } from './components/NativeIcon';
 
 const time = ref('')
 onMounted(() => {
@@ -56,35 +60,7 @@ onMounted(() => {
   tick(); setInterval(tick, 30000)
 })
 
-const icon = (paths: string) => defineComponent({
-  render: () => h('svg', { width: '100%', height: '100%', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
-    paths.split('|').map(d => h('path', { d })))
-})
 
-const gridIcon = defineComponent({
-  render: () => h('svg', { width: '100%', height: '100%', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
-    h('rect', { x: '3', y: '3', width: '7', height: '7' }),
-    h('rect', { x: '14', y: '3', width: '7', height: '7' }),
-    h('rect', { x: '14', y: '14', width: '7', height: '7' }),
-    h('rect', { x: '3', y: '14', width: '7', height: '7' }),
-  ])
-})
-
-const cartIcon = defineComponent({
-  render: () => h('svg', { width: '100%', height: '100%', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
-    h('circle', { cx: '9', cy: '21', r: '1' }),
-    h('circle', { cx: '20', cy: '21', r: '1' }),
-    h('path', { d: 'M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6' }),
-  ])
-})
-
-const barIcon = defineComponent({
-  render: () => h('svg', { width: '100%', height: '100%', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
-    h('line', { x1: '18', y1: '20', x2: '18', y2: '10' }),
-    h('line', { x1: '12', y1: '20', x2: '12', y2: '4' }),
-    h('line', { x1: '6', y1: '20', x2: '6', y2: '14' }),
-  ])
-})
 
 const cubeIcon = icon('M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z')
 
@@ -93,6 +69,7 @@ const navItems = [
   { to: '/productos', label: 'Productos', icon: cubeIcon },
   { to: '/ventas', label: 'Vender', icon: cartIcon },
   { to: '/reportes', label: 'Reportes', icon: barIcon },
+  { to: '/movimientos', label: 'Movimientos', icon: movimientosIcon },
 ]
 </script>
 
