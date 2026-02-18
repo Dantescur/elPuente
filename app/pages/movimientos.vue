@@ -5,10 +5,11 @@
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Movimientos de stock</h1>
         <p class="text-xs font-mono text-zinc-500 mt-1">
-          {{ movimientos.length }} movimientos · Última actualización: {{ lastUpdate }}
+          {{ movimientos.length }} movimientos · Última actualización:
+          <NuxtTime :datetime="lastUpdate" relative locale="es" />
         </p>
       </div>
-      
+
       <!-- Resumen rápido -->
       <div class="flex items-center gap-3 text-xs">
         <div class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
@@ -30,24 +31,18 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
       <!-- Búsqueda por producto -->
       <div class="relative lg:col-span-2">
-        <svg
-          class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none"
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none"
           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <input
-          v-model="filtros.producto"
-          placeholder="Buscar por producto..."
-          class="w-full pl-9 pr-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors"
-        >
+        <input v-model="filtros.producto" placeholder="Buscar por producto..."
+          class="w-full pl-9 pr-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors">
       </div>
 
       <!-- Filtro por tipo -->
-      <select
-        v-model="filtros.tipo"
-        class="px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 focus:outline-none focus:border-violet-500 transition-colors cursor-pointer"
-      >
+      <select v-model="filtros.tipo"
+        class="px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 focus:outline-none focus:border-violet-500 transition-colors cursor-pointer">
         <option value="">Todos los tipos</option>
         <option value="entrada">Entrada</option>
         <option value="salida">Salida</option>
@@ -56,20 +51,14 @@
 
       <!-- Fecha desde -->
       <div class="relative">
-        <input
-          v-model="filtros.fecha_desde"
-          type="date"
-          class="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 focus:outline-none focus:border-violet-500 transition-colors"
-        >
+        <input v-model="filtros.fecha_desde" type="date"
+          class="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 focus:outline-none focus:border-violet-500 transition-colors">
       </div>
 
       <!-- Fecha hasta -->
       <div class="relative">
-        <input
-          v-model="filtros.fecha_hasta"
-          type="date"
-          class="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 focus:outline-none focus:border-violet-500 transition-colors"
-        >
+        <input v-model="filtros.fecha_hasta" type="date"
+          class="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 focus:outline-none focus:border-violet-500 transition-colors">
       </div>
     </div>
 
@@ -77,19 +66,17 @@
     <div class="flex flex-wrap gap-2 mb-6">
       <button
         class="px-3 py-1.5 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-colors flex items-center gap-1.5"
-        @click="limpiarFiltros"
-      >
+        @click="limpiarFiltros">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
         Limpiar filtros
       </button>
-      
+
       <button
         class="px-3 py-1.5 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-colors flex items-center gap-1.5"
-        @click="exportarCSV"
-      >
+        @click="exportarCSV">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="7 10 12 15 17 10" />
@@ -121,11 +108,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="m in movimientosFiltrados"
-              :key="m.id"
-              class="border-b border-zinc-800/50 last:border-0 hover:bg-zinc-800/40 transition-colors"
-            >
+            <tr v-for="m in movimientosFiltrados" :key="m.id"
+              class="border-b border-zinc-800/50 last:border-0 hover:bg-zinc-800/40 transition-colors">
               <td class="td">
                 <span class="text-xs font-mono text-zinc-400">
                   <NuxtTime :datetime="m.fecha" />
@@ -160,10 +144,8 @@
                 <span class="text-xs text-zinc-400">{{ m.motivo || '-' }}</span>
               </td>
               <td class="td text-right">
-                <button
-                  class="p-1.5 text-zinc-500 hover:text-zinc-100 hover:bg-zinc-700 rounded-md transition-all"
-                  @click="verDetalle(m)"
-                >
+                <button class="p-1.5 text-zinc-500 hover:text-zinc-100 hover:bg-zinc-700 rounded-md transition-all"
+                  @click="verDetalle(m)">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="2" />
                     <circle cx="12" cy="5" r="2" />
@@ -179,13 +161,8 @@
 
     <!-- Empty state -->
     <div v-else class="py-20 text-center text-zinc-600">
-      <svg
-        class="w-12 h-12 mx-auto mb-4 opacity-30"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-      >
+      <svg class="w-12 h-12 mx-auto mb-4 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="1.5">
         <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
         <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
       </svg>
@@ -196,22 +173,16 @@
     <!-- Modal de detalle -->
     <Teleport to="body">
       <Transition name="fade">
-        <div
-          v-if="detalleAbierto"
+        <div v-if="detalleAbierto"
           class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          @click.self="detalleAbierto = false"
-        >
+          @click.self="detalleAbierto = false">
           <Transition name="scale">
-            <div
-              v-if="detalleAbierto"
-              class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
-            >
+            <div v-if="detalleAbierto"
+              class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
               <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
                 <h2 class="text-white font-bold tracking-tight">Detalle del movimiento</h2>
-                <button
-                  class="p-1.5 text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-all"
-                  @click="detalleAbierto = false"
-                >
+                <button class="p-1.5 text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-all"
+                  @click="detalleAbierto = false">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
@@ -242,7 +213,8 @@
                   <div class="space-y-1">
                     <p class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Cantidad</p>
                     <p class="text-xl font-mono font-bold" :class="cantidadClass(movimientoSeleccionado)">
-                      {{ movimientoSeleccionado.tipo === 'salida' ? '-' : '+' }}{{ Math.abs(movimientoSeleccionado.cantidad) }}
+                      {{ movimientoSeleccionado.tipo === 'salida' ? '-' : '+' }}{{
+                        Math.abs(movimientoSeleccionado.cantidad) }}
                     </p>
                   </div>
                   <div class="space-y-1">
@@ -292,15 +264,11 @@
     <Teleport to="body">
       <div class="fixed bottom-6 right-4 flex flex-col gap-2 z-[100]">
         <TransitionGroup name="toast">
-          <div
-            v-for="t in toasts" :key="t.id"
+          <div v-for="t in toasts" :key="t.id"
             class="flex items-center gap-3 px-4 py-3 rounded-xl bg-zinc-900 border text-sm shadow-2xl min-w-[240px]"
-            :class="t.type === 'success' ? 'border-emerald-500/30' : 'border-red-500/30'"
-          >
-            <div
-              class="w-1.5 h-1.5 rounded-full shrink-0"
-              :class="t.type === 'success' ? 'bg-emerald-400' : 'bg-red-400'"
-            />
+            :class="t.type === 'success' ? 'border-emerald-500/30' : 'border-red-500/30'">
+            <div class="w-1.5 h-1.5 rounded-full shrink-0"
+              :class="t.type === 'success' ? 'bg-emerald-400' : 'bg-red-400'" />
             {{ t.msg }}
           </div>
         </TransitionGroup>
@@ -347,17 +315,17 @@ const movimientosFiltrados = computed(() => {
     if (filtros.value.producto && !m.producto?.nombre.toLowerCase().includes(filtros.value.producto.toLowerCase())) {
       return false
     }
-    
+
     // Filtro por tipo
     if (filtros.value.tipo && m.tipo !== filtros.value.tipo) {
       return false
     }
-    
+
     // Filtro por fecha desde
     if (filtros.value.fecha_desde && m.fecha < filtros.value.fecha_desde) {
       return false
     }
-    
+
     // Filtro por fecha hasta
     if (filtros.value.fecha_hasta) {
       const fechaHasta = new Date(filtros.value.fecha_hasta)
@@ -366,7 +334,7 @@ const movimientosFiltrados = computed(() => {
         return false
       }
     }
-    
+
     return true
   })
 })
@@ -379,7 +347,7 @@ const resumen = computed(() => {
     else if (m.tipo === 'ajuste') acc.ajustes += 1
     return acc
   }, { entradas: 0, salidas: 0, ajustes: 0 })
-  
+
   return stats
 })
 
@@ -420,7 +388,7 @@ function exportarCSV() {
     m.stock_nuevo,
     m.motivo || ''
   ])
-  
+
   const csv = [headers, ...rows].map(row => row.join(',')).join('\n')
   const blob = new Blob([csv], { type: 'text/csv' })
   const url = window.URL.createObjectURL(blob)
@@ -429,7 +397,7 @@ function exportarCSV() {
   a.download = `movimientos_${new Date().toISOString().split('T')[0]}.csv`
   a.click()
   window.URL.revokeObjectURL(url)
-  
+
   toast('Exportado correctamente', 'success')
 }
 
@@ -452,7 +420,7 @@ const cantidadClass = (m: Movimiento) => ({
   'ajuste': 'text-violet-400'
 }[m.tipo] || 'text-zinc-100')
 
-const stockNuevoClass = (m: Movimiento) => 
+const stockNuevoClass = (m: Movimiento) =>
   m.stock_nuevo === 0 ? 'text-red-400' : 'text-zinc-100'
 
 // Toast
