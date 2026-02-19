@@ -118,6 +118,7 @@ async function login() {
     // Refresh the client-side session state before navigating
     await refreshSession()
     await navigateTo('/')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     error.value = e?.data?.message || 'Error al iniciar sesión'
     form.value.password = '' // Clear password on failure
