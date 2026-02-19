@@ -1,11 +1,11 @@
 <template>
-  <div class="p-4 sm:p-6 lg:p-8 max-w-6xl">
+  <div class="p-4 sm:p-6 lg:p-8 xl:p-10">
     <div class="mb-6">
       <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Nueva Venta</h1>
       <p class="text-xs font-mono text-zinc-500 mt-1">Registra una o varias ventas</p>
     </div>
 
-    <div class="grid md:grid-cols-[1fr_300px] lg:grid-cols-[1fr_340px] gap-4 items-start">
+    <div class="grid md:grid-cols-[1fr_300px] lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_400px] gap-4 xl:gap-6 items-start">
 
       <!-- Product picker -->
       <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-5">
@@ -93,17 +93,28 @@ v-if="carrito.length"
                   <p class="text-sm font-medium truncate">{{ item.producto.nombre }}</p>
                   <p class="mono text-[11px] text-zinc-500">{{ fmt(item.producto.precio_venta) }}/u</p>
                 </div>
+
+                <!-- ✅ Direct editable input — type 312 and press Enter, no button mashing -->
                 <div class="flex items-center gap-1 shrink-0">
                   <button
                     class="w-6 h-6 rounded-md border border-zinc-700 text-zinc-400 hover:text-zinc-100 hover:border-zinc-500 transition-all flex items-center justify-center text-base leading-none"
                     @click="cambiarCantidad(item, -1)">−</button>
-                  <span class="mono text-sm w-7 text-center">{{ item.cantidad }}</span>
+                  <input
+                    :value="item.cantidad"
+                    type="number"
+                    min="1"
+                    :max="item.producto.stock"
+                    class="mono text-sm w-14 text-center bg-zinc-800 border border-zinc-700 rounded-md px-1 py-0.5 text-zinc-100 focus:outline-none focus:border-violet-500 transition-colors [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    @change="setCantidad(item, ($event.target as HTMLInputElement).value)"
+                    @focus="($event.target as HTMLInputElement).select()"
+                  >
                   <button
-:disabled="item.cantidad >= item.producto.stock"
+                    :disabled="item.cantidad >= item.producto.stock"
                     class="w-6 h-6 rounded-md border border-zinc-700 text-zinc-400 hover:text-zinc-100 hover:border-zinc-500 disabled:opacity-30 transition-all flex items-center justify-center text-base leading-none"
                     @click="cambiarCantidad(item, 1)">+</button>
                 </div>
-                <span class="mono text-sm text-zinc-300 w-14 text-right shrink-0">
+
+                <span class="mono text-sm text-zinc-300 w-16 text-right shrink-0">
                   {{ fmt(item.producto.precio_venta * item.cantidad) }}
                 </span>
                 <button class="text-zinc-600 hover:text-red-400 transition-colors p-0.5 shrink-0" @click="quitarItem(item)">
@@ -174,46 +185,22 @@ v-model="item.motivo" placeholder="Motivo (opcional)"
 </template>
 
 <script setup lang="ts">
+
 interface Producto {
-  id: number
-  nombre: string
-  costo: number
-  precio_venta: number
-  stock: number
-  stock_minimo: number
-  categoria: string
+  id: number; nombre: string; costo: number; precio_venta: number
+  stock: number; stock_minimo: number; categoria: string
 }
-
-interface CartItem {
-  producto: Producto
-  cantidad: number
-  motivo: string
-}
-
-interface VentaResult {
-  id: number
-  producto: string
-  cantidad: number
-  subtotal: number
-  ganancia: number
-  fecha: string
-}
-
+interface CartItem { producto: Producto; cantidad: number; motivo: string }
+interface VentaResult { id: number; producto: string; cantidad: number; subtotal: number; ganancia: number; fecha: string }
 interface VentaResponse {
   success: boolean
-  data: {
-    ventas: Omit<VentaResult, 'fecha'>[]
-    total: number
-    ganancia_total: number
-    fecha: string
-  }
+  data: { ventas: Omit<VentaResult, 'fecha'>[]; total: number; ganancia_total: number; fecha: string }
 }
 
 const { fmt } = useFmt()
 const { toasts, toast } = useToast()
 
 const { data: raw, pending: cargando } = await useFetch<{ data: Producto[] }>('/api/productos')
-
 const productosLocales = ref<Producto[]>([])
 watch(() => raw.value?.data, (data) => {
   if (data) productosLocales.value = data.map(p => ({ ...p }))
@@ -228,20 +215,15 @@ const productosFiltrados = computed(() => productosLocales.value.filter(p =>
 ))
 
 const carrito = ref<CartItem[]>([])
-
 const carritoMap = computed(() => new Map(carrito.value.map(i => [i.producto.id, i])))
 const enCarrito = (p: Producto) => carritoMap.value.has(p.id)
 const cantidadEnCarrito = (p: Producto) => carritoMap.value.get(p.id)?.cantidad ?? 0
-
 const stockDisponible = (p: Producto) => p.stock - cantidadEnCarrito(p)
 
 function agregarAlCarrito(p: Producto) {
   const existente = carritoMap.value.get(p.id)
   if (existente) {
-    if (existente.cantidad >= p.stock) {
-      toast(`Stock máximo alcanzado para ${p.nombre}`, 'error')
-      return
-    }
+    if (existente.cantidad >= p.stock) { toast(`Stock máximo alcanzado para ${p.nombre}`, 'error'); return }
     existente.cantidad++
   } else {
     carrito.value.push({ producto: p, cantidad: 1, motivo: '' })
@@ -254,9 +236,20 @@ function cambiarCantidad(item: CartItem, d: number) {
   if (n > item.producto.stock) return
   item.cantidad = n
 }
-function quitarItem(item: CartItem) {
-  carrito.value = carrito.value.filter(i => i.producto.id !== item.producto.id)
+
+// ✅ Type the quantity directly — clamps to available stock, removes item if cleared
+function setCantidad(item: CartItem, value: string) {
+  const n = parseInt(value, 10)
+  if (isNaN(n) || n < 1) { quitarItem(item); return }
+  if (n > item.producto.stock) {
+    item.cantidad = item.producto.stock
+    toast(`Máximo disponible: ${item.producto.stock}`, 'error')
+    return
+  }
+  item.cantidad = n
 }
+
+function quitarItem(item: CartItem) { carrito.value = carrito.value.filter(i => i.producto.id !== item.producto.id) }
 function limpiarCarrito() { carrito.value = [] }
 
 const totalVenta = computed(() => carrito.value.reduce((s, i) => s + i.producto.precio_venta * i.cantidad, 0))
@@ -268,10 +261,8 @@ const ultimasVentas = ref<VentaResult[]>([])
 async function procesarVenta() {
   if (!carrito.value.length) return
   procesando.value = true
-
   const snapshot = [...carrito.value]
   const totalSnapshot = totalVenta.value
-
   try {
     const res = await $fetch<VentaResponse>('/api/ventas', {
       method: 'POST',
@@ -281,21 +272,14 @@ async function procesarVenta() {
         ...(i.motivo.trim() ? { motivo: i.motivo.trim() } : {})
       }))
     })
-
     for (const item of snapshot) {
       const local = productosLocales.value.find(p => p.id === item.producto.id)
       if (local) local.stock -= item.cantidad
     }
-
     const fecha = res.data.fecha
-    ultimasVentas.value = [
-      ...res.data.ventas.map(v => ({ ...v, fecha })),
-      ...ultimasVentas.value
-    ].slice(0, 8)
-
+    ultimasVentas.value = [...res.data.ventas.map(v => ({ ...v, fecha })), ...ultimasVentas.value].slice(0, 8)
     toast(`Venta registrada · ${fmt(totalSnapshot)}`, 'success')
     limpiarCarrito()
-
     await refreshNuxtData()
   } catch (e: any) {
     toast(e?.data?.message || 'Error al procesar venta', 'error')

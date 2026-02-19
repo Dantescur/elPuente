@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 sm:p-6 lg:p-8 max-w-6xl">
+  <div class="p-4 sm:p-6 lg:p-8 xl:p-10">
     <!-- Header -->
     <div class="flex items-start justify-between gap-3 mb-6">
       <div>
@@ -7,13 +7,12 @@
         <p class="text-xs font-mono text-zinc-500 mt-1">{{ fechaHoy }}</p>
       </div>
       <button
-:disabled="cargando"
+        :disabled="cargando"
         class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:text-zinc-100 transition-all disabled:opacity-50"
-        @click="() => cargar()">
+        @click="cargar"
+      >
         <Icon v-if="!cargando" name="lucide:refresh-cw" class="w-4 h-4" />
-        <span
-v-else
-          class="w-3.5 h-3.5 border-2 border-zinc-600 border-t-violet-500 rounded-full animate-spin inline-block" />
+        <span v-else class="w-3.5 h-3.5 border-2 border-zinc-600 border-t-violet-500 rounded-full animate-spin inline-block" />
         <span class="hidden sm:inline">Actualizar</span>
       </button>
     </div>
@@ -24,18 +23,21 @@ v-else
     </div>
 
     <template v-else-if="data">
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-5">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 xl:gap-4 mb-5">
         <KPICard label="Ventas hoy" :value="data.ventas_hoy.total_ventas" sub="transacciones" />
         <KPICard
-label="Ingresos hoy" :value="fmt(data.ventas_hoy.ingresos)"
-          :sub="fmt(data.ventas_hoy.ganancias) + ' ganancia'" accent />
-          <KPICard label="Ingresos del mes" :value="fmt(data.ventas_mes.ganancias)" :sub="fmt(data.ventas_mes.total) + ' ventas'" />
+          label="Ingresos hoy"
+          :value="fmt(data.ventas_hoy.ingresos)"
+          :sub="fmt(data.ventas_hoy.ganancias) + ' ganancia'"
+          accent
+        />
         <KPICard label="Stock bajo" :value="data.stock_bajo.length" :warn="data.stock_bajo.length > 0" />
       </div>
 
       <!-- Two col -->
-      <div class="grid md:grid-cols-2 gap-4 mb-4">
+      <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 mb-4">
         <!-- Top productos -->
+        <!-- ✅ Using HomePanel component consistently (was using duplicate inline styles before) -->
         <HomePanel>
           <template #title>Top productos vendidos</template>
           <div v-if="!data.top_productos.length" class="py-8 text-center text-sm text-zinc-600">
@@ -54,10 +56,7 @@ label="Ingresos hoy" :value="fmt(data.ventas_hoy.ingresos)"
       </div>
 
       <!-- Inventory full width -->
-       <HomePanel>
-         <template #title>Valor del inventario</template>
-         <InventoryValue :valor="data.valor_inventario" :margen="margen" />
-       </HomePanel>
+      <InventoryValue :valor="data.valor_inventario" :margen="margen" />
     </template>
   </div>
 </template>
@@ -66,7 +65,7 @@ label="Ingresos hoy" :value="fmt(data.ventas_hoy.ingresos)"
 const { fmt } = useFmt()
 
 const { data: raw, pending: cargando, refresh: cargar } = await useFetch('/api/dashboard/resumen')
-const data = computed(() => raw.value?.data ?? null)
+const data = computed(() => (raw.value as any)?.data ?? null)
 
 const fechaHoy = new Date().toLocaleDateString('es-ES', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -79,3 +78,5 @@ const margen = computed(() => {
   return ((v.ganancia_potencial / v.valor_venta) * 100).toFixed(1)
 })
 </script>
+
+<!-- ✅ Removed duplicate .panel / .panel-title styles — HomePanel.vue owns these -->

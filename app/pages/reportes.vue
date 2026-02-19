@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 sm:p-6 lg:p-8 max-w-6xl">
+  <div class="p-4 sm:p-6 lg:p-8 xl:p-10">
     <!-- Header -->
     <div class="flex items-start justify-between gap-3 mb-6 flex-wrap sm:flex-nowrap">
       <div>
@@ -7,13 +7,13 @@
         <p class="text-xs font-mono text-zinc-500 mt-1">Analiza el desempeño del negocio</p>
       </div>
       <button
-v-if="data"
+        v-if="data"
         class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:text-zinc-100 transition-all shrink-0"
-        @click="exportarCSV">
+        @click="exportarCSV"
+      >
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="7 10 12 15 17 10" />
-          <line x1="12" y1="15" x2="12" y2="3" />
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
         <span class="hidden sm:inline">Exportar CSV</span>
       </button>
@@ -40,64 +40,53 @@ v-if="data"
         </div>
         <div class="col-span-2 sm:col-auto flex gap-2">
           <button
-:disabled="cargando"
+            :disabled="cargando"
             class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 text-sm font-bold text-white bg-violet-600 hover:bg-violet-500 rounded-lg transition-colors disabled:opacity-50"
-            @click="cargar">
-            <span
-v-if="cargando"
-              class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            @click="cargar"
+          >
+            <span v-if="cargando" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
             <svg v-else class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             Buscar
           </button>
           <button
             class="px-3 py-2 text-sm font-medium text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 rounded-lg transition-all"
-            @click="resetFiltros">Resetear</button>
+            @click="resetFiltros"
+          >Resetear</button>
         </div>
       </div>
     </div>
 
     <!-- Loading -->
     <div v-if="cargando" class="py-16 text-center flex flex-col items-center gap-3 text-zinc-600">
-      <div class="w-6 h-6 border-2 border-zinc-700 border-t-violet-500 rounded-full animate-spin" />
+      <div class="w-6 h-6 border-2 border-zinc-700 border-t-violet-500 rounded-full animate-spin"/>
       <p class="text-sm">Generando reporte...</p>
     </div>
 
     <!-- ✅ Error state — was swallowed silently before, user had no feedback -->
     <div v-else-if="error" class="py-16 text-center">
-      <svg
-class="w-10 h-10 mx-auto mb-3 text-red-500/40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="1.5">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="12" y1="8" x2="12" y2="12" />
-        <line x1="12" y1="16" x2="12.01" y2="16" />
+      <svg class="w-10 h-10 mx-auto mb-3 text-red-500/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
       <p class="text-sm text-zinc-400">Error al generar el reporte</p>
       <p class="text-xs text-zinc-600 mt-1">{{ error }}</p>
-      <button
-        class="mt-4 px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-        @click="cargar">
+      <button class="mt-4 px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors" @click="cargar">
         Reintentar
       </button>
     </div>
 
     <!-- Empty prompt -->
     <div v-else-if="!data" class="py-16 text-center text-zinc-600">
-      <svg
-class="w-10 h-10 mx-auto mb-3 opacity-20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="1.5">
-        <line x1="18" y1="20" x2="18" y2="10" />
-        <line x1="12" y1="20" x2="12" y2="4" />
-        <line x1="6" y1="20" x2="6" y2="14" />
+      <svg class="w-10 h-10 mx-auto mb-3 opacity-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
       </svg>
       <p class="text-sm">Aplica los filtros y presiona <strong class="text-zinc-400">Buscar</strong></p>
     </div>
 
     <template v-else>
       <!-- KPIs -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 xl:gap-4 mb-5">
         <div class="kpi-card">
           <p class="kpi-label">Ventas</p>
           <p class="kpi-value mono">{{ data.totales.cantidad_ventas }}</p>
@@ -119,15 +108,18 @@ class="w-10 h-10 mx-auto mb-3 opacity-20" viewBox="0 0 24 24" fill="none" stroke
       <!-- Bar chart -->
       <div v-if="data.ventas_por_dia.length > 1" class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-4">
         <p class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 mb-4">Ingresos por día</p>
-        <div class="flex items-end gap-1 h-28 overflow-x-auto pb-1">
+        <div class="flex items-end gap-1 h-28 xl:h-40 overflow-x-auto pb-1">
           <div
-v-for="d in data.ventas_por_dia" :key="d.fecha"
-            class="flex flex-col items-center gap-1.5 flex-1 min-w-[28px] max-w-[56px] h-full">
+            v-for="d in data.ventas_por_dia"
+            :key="d.fecha"
+            class="flex flex-col items-center gap-1.5 flex-1 min-w-[28px] max-w-[56px] h-full"
+          >
             <div class="flex-1 w-full flex items-end">
               <div
-class="w-full rounded-t-sm bg-violet-500/70 hover:bg-violet-500 transition-colors cursor-default"
+                class="w-full rounded-t-sm bg-violet-500/70 hover:bg-violet-500 transition-colors cursor-default"
                 :style="{ height: barHeight(d.ingresos) + '%', minHeight: '4px' }"
-                :title="`${d.fecha}: ${fmt(d.ingresos)}`" />
+                :title="`${d.fecha}: ${fmt(d.ingresos)}`"
+              />
             </div>
             <span class="mono text-[9px] text-zinc-600 whitespace-nowrap">{{ shortDate(d.fecha) }}</span>
           </div>
@@ -141,15 +133,14 @@ class="w-full rounded-t-sm bg-violet-500/70 hover:bg-violet-500 transition-color
             Detalle <span class="text-zinc-600">({{ data.ventas.length }})</span>
           </p>
           <div class="relative">
-            <svg
-class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-600 pointer-events-none"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-600 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <input
-v-model="busquedaTabla" placeholder="Filtrar..."
-              class="pl-7 pr-3 py-1.5 text-xs bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors w-36 sm:w-48">
+              v-model="busquedaTabla"
+              placeholder="Filtrar..."
+              class="pl-7 pr-3 py-1.5 text-xs bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors w-36 sm:w-48"
+            >
           </div>
         </div>
 
@@ -188,13 +179,13 @@ v-model="busquedaTabla" placeholder="Filtrar..."
             </thead>
             <tbody>
               <tr
-v-for="v in ventasFiltradas" :key="v.id"
-                class="border-b border-zinc-800/40 last:border-0 hover:bg-zinc-800/30 transition-colors">
+                v-for="v in ventasFiltradas"
+                :key="v.id"
+                class="border-b border-zinc-800/40 last:border-0 hover:bg-zinc-800/30 transition-colors"
+              >
                 <td class="td mono text-xs text-zinc-600">{{ v.id }}</td>
                 <td class="td font-medium text-sm">{{ v.producto }}</td>
-                <td class="td"><span
-                    class="mono text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full">{{ v.categoria
-                    }}</span></td>
+                <td class="td"><span class="mono text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full">{{ v.categoria }}</span></td>
                 <td class="td mono text-xs text-zinc-500">{{ fmtFecha(v.fecha) }}</td>
                 <td class="td mono text-sm">{{ v.cantidad }}</td>
                 <td class="td mono text-sm">{{ fmt(v.precio_venta) }}</td>
@@ -210,6 +201,7 @@ v-for="v in ventasFiltradas" :key="v.id"
 </template>
 
 <script setup lang="ts">
+
 interface VentaDetalle { id: number; producto: string; categoria: string; cantidad: number; precio_venta: number; ganancia: number; fecha: string; subtotal: number }
 interface DiaStat { fecha: string; ventas: number; ingresos: number; ganancias: number }
 interface ReporteData {
@@ -218,6 +210,7 @@ interface ReporteData {
   ventas_por_dia: DiaStat[]
 }
 
+// ✅ Uses shared composable — was using MXN/es-MX (bug) while the rest of the app uses CUP/es-ES
 const { fmt } = useFmt()
 
 const hoy = new Date().toISOString().split('T')[0]
@@ -243,7 +236,7 @@ async function cargar() {
       fechaFin: filtros.value.fechaFin
     }
     if (filtros.value.categoria) params.categoria = filtros.value.categoria
-    const res = await $fetch('/api/reportes/ventas', { params })
+    const res = await $fetch<any>('/api/reportes/ventas', { params })
     data.value = res.data
   } catch (e: any) {
     // ✅ Error is now surfaced to the user instead of silently console.error'd
@@ -294,39 +287,13 @@ function exportarCSV() {
 </script>
 
 <style scoped>
-.field-label {
-  @apply block text-[10px] font-semibold uppercase tracking-widest text-zinc-500 mb-1.5;
-}
-
-.field-input {
-  @apply w-full px-3 py-2 text-sm bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors;
-}
-
-.kpi-card {
-  @apply bg-zinc-800/50 border border-zinc-800 rounded-xl p-4;
-}
-
-.kpi-card--accent {
-  @apply border-violet-500/25;
-}
-
-.kpi-card--green {
-  @apply border-emerald-500/25;
-}
-
-.kpi-label {
-  @apply text-[10px] font-semibold uppercase tracking-widest text-zinc-500 mb-2;
-}
-
-.kpi-value {
-  @apply text-2xl sm:text-3xl font-medium tracking-tight;
-}
-
-.th {
-  @apply px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-zinc-500;
-}
-
-.td {
-  @apply px-4 py-3;
-}
+.field-label { @apply block text-[10px] font-semibold uppercase tracking-widest text-zinc-500 mb-1.5; }
+.field-input { @apply w-full px-3 py-2 text-sm bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors; }
+.kpi-card { @apply bg-zinc-800/50 border border-zinc-800 rounded-xl p-4; }
+.kpi-card--accent { @apply border-violet-500/25; }
+.kpi-card--green { @apply border-emerald-500/25; }
+.kpi-label { @apply text-[10px] font-semibold uppercase tracking-widest text-zinc-500 mb-2; }
+.kpi-value { @apply text-2xl sm:text-3xl font-medium tracking-tight; }
+.th { @apply px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-zinc-500; }
+.td { @apply px-4 py-3; }
 </style>

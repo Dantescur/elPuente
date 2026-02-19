@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 sm:p-6 lg:p-8 max-w-6xl">
+    <div class="p-4 sm:p-6 lg:p-8 xl:p-10">
         <!-- Header -->
         <div class="flex items-start justify-between gap-3 mb-6 flex-wrap sm:flex-nowrap">
             <div>
@@ -23,7 +23,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="flex flex-col sm:flex-row gap-2 mb-4">
+        <div class="flex flex-col sm:flex-row gap-2 xl:gap-3 mb-4">
             <div class="relative flex-1">
                 <svg
 class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none"
@@ -83,13 +83,25 @@ v-if="productosFiltrados.length"
             <table class="w-full">
                 <thead>
                     <tr class="border-b border-zinc-800">
-                        <th class="th">Nombre</th>
+                        <th class="th-sort" @click="toggleSort('nombre')">
+                            Nombre <SortIcon field="nombre" :active="sortField" :dir="sortDir" />
+                        </th>
                         <th class="th">Categoría</th>
-                        <th class="th">Costo</th>
-                        <th class="th">Precio venta</th>
-                        <th class="th">Margen</th>
-                        <th class="th">Stock</th>
-                        <th class="th">Estado</th>
+                        <th class="th-sort" @click="toggleSort('costo')">
+                            Costo <SortIcon field="costo" :active="sortField" :dir="sortDir" />
+                        </th>
+                        <th class="th-sort" @click="toggleSort('precio_venta')">
+                            Precio venta <SortIcon field="precio_venta" :active="sortField" :dir="sortDir" />
+                        </th>
+                        <th class="th-sort" @click="toggleSort('margen')">
+                            Margen <SortIcon field="margen" :active="sortField" :dir="sortDir" />
+                        </th>
+                        <th class="th-sort" @click="toggleSort('stock')">
+                            Stock <SortIcon field="stock" :active="sortField" :dir="sortDir" />
+                        </th>
+                        <th class="th-sort" @click="toggleSort('estado')">
+                            Estado <SortIcon field="estado" :active="sortField" :dir="sortDir" />
+                        </th>
                         <th class="th text-right">Acción</th>
                     </tr>
                 </thead>
@@ -262,6 +274,7 @@ v-else-if="form.costo > 0 && form.precio_venta > 0 && form.precio_venta <= form.
 </template>
 
 <script setup lang="ts">
+
 interface Producto {
     id: number
     nombre: string
@@ -281,10 +294,49 @@ const productos = computed<Producto[]>(() => raw.value?.data ?? [])
 const busqueda = ref('')
 const filtroCategoria = ref('')
 const categorias = computed(() => [...new Set(productos.value.map(p => p.categoria))].sort())
-const productosFiltrados = computed(() => productos.value.filter(p =>
-    (!busqueda.value || p.nombre.toLowerCase().includes(busqueda.value.toLowerCase())) &&
-    (!filtroCategoria.value || p.categoria === filtroCategoria.value)
-))
+type SortField = 'nombre' | 'costo' | 'precio_venta' | 'margen' | 'stock' | 'estado'
+const sortField = ref<SortField | ''>('')
+const sortDir = ref<'asc' | 'desc'>('asc')
+
+function toggleSort(field: SortField) {
+    if (sortField.value === field) {
+        sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+    } else {
+        sortField.value = field
+        sortDir.value = 'asc'
+    }
+}
+
+// Estado sort order: sin stock < stock bajo < normal
+function estadoRank(p: Producto): number {
+    if (p.stock === 0) return 0
+    if (p.stock <= p.stock_minimo) return 1
+    return 2
+}
+
+const productosFiltrados = computed(() => {
+    const filtered = productos.value.filter(p =>
+        (!busqueda.value || p.nombre.toLowerCase().includes(busqueda.value.toLowerCase())) &&
+        (!filtroCategoria.value || p.categoria === filtroCategoria.value)
+    )
+    if (!sortField.value) return filtered
+
+    return [...filtered].sort((a, b) => {
+        let va: number | string, vb: number | string
+        switch (sortField.value) {
+            case 'nombre':     va = a.nombre.toLowerCase(); vb = b.nombre.toLowerCase(); break
+            case 'costo':      va = a.costo;                vb = b.costo;                break
+            case 'precio_venta': va = a.precio_venta;       vb = b.precio_venta;         break
+            case 'margen':     va = a.precio_venta ? (a.precio_venta - a.costo) / a.precio_venta : 0
+                               vb = b.precio_venta ? (b.precio_venta - b.costo) / b.precio_venta : 0; break
+            case 'stock':      va = a.stock;                vb = b.stock;                break
+            case 'estado':     va = estadoRank(a);          vb = estadoRank(b);          break
+            default:           return 0
+        }
+        const cmp = va < vb ? -1 : va > vb ? 1 : 0
+        return sortDir.value === 'asc' ? cmp : -cmp
+    })
+})
 
 const modalAbierto = ref(false)
 const editando = ref<Producto | null>(null)
@@ -348,6 +400,25 @@ async function eliminar(id: number) {
     }
 }
 
+// Inline sort icon component
+const SortIcon = defineComponent({
+    props: {
+        field: String,
+        active: String,
+        dir: String
+    },
+    template: `
+        <span class="inline-flex flex-col ml-1 opacity-40 transition-opacity" :class="active === field ? 'opacity-100' : 'group-hover:opacity-70'">
+            <svg width="8" height="5" viewBox="0 0 8 5" :class="active === field && dir === 'asc' ? 'text-violet-400' : 'text-zinc-500'">
+                <path d="M4 0L8 5H0L4 0Z" fill="currentColor"/>
+            </svg>
+            <svg width="8" height="5" viewBox="0 0 8 5" class="mt-0.5" :class="active === field && dir === 'desc' ? 'text-violet-400' : 'text-zinc-500'">
+                <path d="M4 5L0 0H8L4 5Z" fill="currentColor"/>
+            </svg>
+        </span>
+    `
+})
+
 const calcMargen = (p: Producto) => p.precio_venta ? ((p.precio_venta - p.costo) / p.precio_venta * 100).toFixed(1) : '0.0'
 const margenColor = (p: Producto) => { const m = (p.precio_venta - p.costo) / p.precio_venta * 100; return m >= 15 ? 'text-emerald-400' : m >= 5 ? 'text-amber-400' : 'text-red-400' }
 const stockColor = (p: Producto) => p.stock === 0 ? 'text-red-400' : p.stock <= p.stock_minimo ? 'text-amber-400' : 'text-zinc-100'
@@ -357,6 +428,7 @@ const labelEstado = (p: Producto) => p.stock === 0 ? 'Sin stock' : p.stock <= p.
 
 <style scoped>
 .th { @apply px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-zinc-500; }
+.th-sort { @apply px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-zinc-500 cursor-pointer hover:text-zinc-300 select-none transition-colors; }
 .td { @apply px-4 py-3; }
 .badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold font-mono; }
 .badge--green { @apply bg-emerald-500/10 text-emerald-400; }
