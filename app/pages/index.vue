@@ -9,7 +9,7 @@
       <button
         :disabled="cargando"
         class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:text-zinc-100 transition-all disabled:opacity-50"
-        @click="cargar"
+        @click="() => cargar()"
       >
         <Icon v-if="!cargando" name="lucide:refresh-cw" class="w-4 h-4" />
         <span v-else class="w-3.5 h-3.5 border-2 border-zinc-600 border-t-violet-500 rounded-full animate-spin inline-block" />

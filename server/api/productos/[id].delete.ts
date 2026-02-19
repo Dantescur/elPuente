@@ -1,7 +1,10 @@
 import { db, schema } from 'hub:db'
 import { eq } from 'drizzle-orm'
+import { requireRole } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {
+  requireRole(event, ['admin'])
+
   const id = Number(getRouterParam(event, 'id'))
 
   if (!id) {

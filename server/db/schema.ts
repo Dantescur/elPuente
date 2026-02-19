@@ -4,6 +4,9 @@ import * as t from "drizzle-orm/sqlite-core";
 export const TIPO_MOVIMIENTO = ['entrada', 'salida', 'ajuste'] as const;
 export type TipoMovimiento = typeof TIPO_MOVIMIENTO[number]
 
+export const ROLES = ['admin', 'dependiente', 'sponsor'] as const
+export type Rol = typeof ROLES[number]
+
 const utcNow = sql`(strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))`;
 
 export const productos = t.sqliteTable('productos', {
@@ -32,6 +35,9 @@ export const ventas = t.sqliteTable('ventas', {
   precio_venta: t.integer('precio_venta').notNull(),
   ganancia: t.integer('ganancia').notNull(),
   fecha_venta: t.text().default(utcNow),
+  usuario_id: t.integer('usuario_id')
+    .references(() => usuarios.id)
+    .notNull(),
 },
   (table) => [
     t.index('idx_ventas_producto').on(table.producto_id),
@@ -48,12 +54,26 @@ export const movimientos = t.sqliteTable('movimientos', {
   stock_nuevo: t.integer('stock_nuevo').notNull(),
   motivo: t.text('motivo'),
   fecha: t.text().default(utcNow),
+  usuario_id: t.integer('usuario_id')
+    .references(() => usuarios.id)
+    .notNull(),
+
 },
   (table) => [
     t.index('idx_movimientos_producto').on(table.producto_id),
     t.index('idx_movimientos_fecha').on(table.fecha),
   ]
 )
+
+export const usuarios = t.sqliteTable('usuarios', {
+  id: t.integer('id').primaryKey({ autoIncrement: true }),
+  username: t.text('username').notNull().unique(),
+  password_hash: t.text('password_hash').notNull(),
+  rol: t.text('rol').notNull(),
+  activo: t.integer('activo', { mode: 'boolean' }).notNull().default(true),
+  fecha_creacion: t.text().default(utcNow),
+})
+
 
 export const ventasRelations = relations(ventas, ({ one }) => ({
   producto: one(productos, {

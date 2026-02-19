@@ -1,27 +1,33 @@
+import { db, schema } from 'hub:db'
+import { eq } from 'drizzle-orm'
+
 export default defineEventHandler(async (event) => {
   const { username, password } = await readBody(event)
 
   if (!username || !password) {
-    throw createError({ statusCode: 400, message: 'Usuario y contraseña requeridos' })
+    throw createError({ statusCode: 400, message: 'Credenciales requeridas' })
   }
 
-  const validUsername = process.env.AUTH_USERNAME
-  const validPassword = process.env.AUTH_PASSWORD
+  const user = await db.query.usuarios.findFirst({
+    where: eq(schema.usuarios.username, username)
+  })
 
-  if (!validUsername || !validPassword) {
-    console.error('[auth] AUTH_USERNAME / AUTH_PASSWORD env vars not set')
-    throw createError({ statusCode: 500, message: 'Error de configuración del servidor' })
+  if (!user || !user.activo) {
+    throw createError({ statusCode: 401, message: 'Credenciales inválidas' })
   }
 
-  const usernameOk = username === validUsername
-  const passwordOk = password === validPassword
+  const valid = await verifyPassword(user.password_hash, password)
 
-  if (!usernameOk || !passwordOk) {
-    throw createError({ statusCode: 401, message: 'Credenciales incorrectas' })
+  if (!valid) {
+    throw createError({ statusCode: 401, message: 'Credenciales inválidas' })
   }
 
   await setUserSession(event, {
-    user: { username }
+    user: {
+      id: user.id,
+      username: user.username,
+      rol: user.rol
+    }
   })
 
   return { success: true }

@@ -1,6 +1,8 @@
 declare module '#auth-utils' {
     interface User {
-        username: string
+        id: number
+        username: string,
+        rol: string
     }
 
     // interface UserSession {

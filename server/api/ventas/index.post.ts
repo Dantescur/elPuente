@@ -17,6 +17,8 @@ function validarVenta(venta: VentaInput, index: number): void {
 }
 
 export default defineEventHandler(async (event) => {
+  const session = await requireUserSession(event)
+  const userId = session.user.id
   const body = await readBody(event)
 
   const ventas: VentaInput[] = Array.isArray(body) ? body : [body]
@@ -73,7 +75,8 @@ export default defineEventHandler(async (event) => {
           producto_id: venta.productoId,
           cantidad: venta.cantidad,
           precio_venta: producto.precio_venta,
-          ganancia
+          ganancia,
+          usuario_id: userId,
         }).returning()
 
         const nuevaVenta = ventasInsertadas[0]
@@ -94,7 +97,8 @@ export default defineEventHandler(async (event) => {
           cantidad: venta.cantidad,
           stock_anterior: producto.stock,
           stock_nuevo: producto.stock - venta.cantidad,
-          motivo: venta.motivo || 'Venta'
+          motivo: venta.motivo || 'Venta',
+          usuario_id: userId,
         })
 
         resultados.push({ id: nuevaVenta.id, producto: producto.nombre, cantidad: venta.cantidad, subtotal, ganancia })
