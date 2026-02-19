@@ -14,8 +14,17 @@ v-for="(p, i) in productos" :key="p.id"
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  productos: Array<any>
-}>()
-const fmt = (n: any) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'CUP', maximumFractionDigits: 0 }).format(Number(n) || 0)
+
+// ✅ Typed props instead of Array<any>
+interface TopProducto {
+  id: number
+  nombre: string
+  total_vendido: number
+  ingresos: number
+  ganancia_total: number
+}
+
+defineProps<{ productos: TopProducto[] }>()
+
+const { fmt } = useFmt()
 </script>

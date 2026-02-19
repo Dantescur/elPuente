@@ -48,19 +48,22 @@ v-for="item in navItems" :key="item.to" :to="item.to"
 </template>
 
 <script setup lang="ts">
-import { barIcon } from './components/BarIcon';
-import { cartIcon } from './components/CartIcon';
-import { gridIcon } from './components/GridIcon';
-import { movimientosIcon } from './components/MovimientosIcon';
-import { icon } from './components/NativeIcon';
+import { barIcon } from './components/BarIcon'
+import { cartIcon } from './components/CartIcon'
+import { gridIcon } from './components/GridIcon'
+import { movimientosIcon } from './components/MovimientosIcon'
+import { icon } from './components/NativeIcon'
 
 const time = ref('')
+
 onMounted(() => {
-  const tick = () => time.value = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
-  tick(); setInterval(tick, 30000)
+  const tick = () => {
+    time.value = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+  }
+  tick()
+  const intervalId = setInterval(tick, 30000)
+  onUnmounted(() => clearInterval(intervalId))
 })
-
-
 
 const cubeIcon = icon('M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z')
 
@@ -97,7 +100,6 @@ html {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
