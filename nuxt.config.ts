@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     '@nuxt/hints',
     '@nuxthub/core',
     '@nuxtjs/tailwindcss',
-    '@nuxt/icon'
+    '@nuxt/icon',
+    'nuxt-auth-utils'
   ]
 })

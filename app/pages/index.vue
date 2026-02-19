@@ -31,13 +31,11 @@
           :sub="fmt(data.ventas_hoy.ganancias) + ' ganancia'"
           accent
         />
+        <KPICard label="Ingresos mes" :value="fmt(data.ventas_mes.total)" :sub="fmt(data.ventas_mes.ganancias)" />
         <KPICard label="Stock bajo" :value="data.stock_bajo.length" :warn="data.stock_bajo.length > 0" />
       </div>
 
-      <!-- Two col -->
       <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 mb-4">
-        <!-- Top productos -->
-        <!-- ✅ Using HomePanel component consistently (was using duplicate inline styles before) -->
         <HomePanel>
           <template #title>Top productos vendidos</template>
           <div v-if="!data.top_productos.length" class="py-8 text-center text-sm text-zinc-600">
@@ -55,8 +53,10 @@
         </HomePanel>
       </div>
 
-      <!-- Inventory full width -->
-      <InventoryValue :valor="data.valor_inventario" :margen="margen" />
+      <HomePanel>
+        <template #title>Valor del inventario</template>
+        <InventoryValue :valor="data.valor_inventario" :margen="margen" />
+      </HomePanel>
     </template>
   </div>
 </template>
@@ -65,7 +65,7 @@
 const { fmt } = useFmt()
 
 const { data: raw, pending: cargando, refresh: cargar } = await useFetch('/api/dashboard/resumen')
-const data = computed(() => (raw.value as any)?.data ?? null)
+const data = computed(() => raw.value?.data ?? null)
 
 const fechaHoy = new Date().toLocaleDateString('es-ES', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -78,5 +78,3 @@ const margen = computed(() => {
   return ((v.ganancia_potencial / v.valor_venta) * 100).toFixed(1)
 })
 </script>
-
-<!-- ✅ Removed duplicate .panel / .panel-title styles — HomePanel.vue owns these -->
