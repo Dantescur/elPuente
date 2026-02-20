@@ -6,13 +6,12 @@
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-100">Dashboard</h1>
         <p class="text-xs font-mono text-zinc-500 mt-1">{{ fechaHoy }}</p>
       </div>
-      <button
-        :disabled="cargando"
+      <button :disabled="cargando"
         class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:text-zinc-100 transition-all disabled:opacity-50"
-        @click="cargar()"
-      >
+        @click="cargar()">
         <Icon v-if="!cargando" name="lucide:refresh-cw" class="w-4 h-4" />
-        <span v-else class="w-3.5 h-3.5 border-2 border-zinc-600 border-t-violet-500 rounded-full animate-spin inline-block" />
+        <span v-else
+          class="w-3.5 h-3.5 border-2 border-zinc-600 border-t-violet-500 rounded-full animate-spin inline-block" />
         <span class="hidden sm:inline">Actualizar</span>
       </button>
     </div>
@@ -25,12 +24,8 @@
     <template v-else-if="data">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 xl:gap-4 mb-5">
         <KPICard label="Ventas hoy" :value="data.ventas_hoy.total_ventas" sub="transacciones" />
-        <KPICard
-          label="Ingresos hoy"
-          :value="fmt(data.ventas_hoy.ingresos)"
-          :sub="fmt(data.ventas_hoy.ganancias) + ' ganancia'"
-          accent
-        />
+        <KPICard label="Ingresos hoy" :value="fmt(data.ventas_hoy.ingresos)"
+          :sub="fmt(data.ventas_hoy.ganancias) + ' ganancia'" accent />
         <KPICard label="Ingresos mes" :value="fmt(data.ventas_mes.total)" :sub="fmt(data.ventas_mes.ganancias)" />
         <KPICard label="Stock bajo" :value="data.stock_bajo.length" :warn="data.stock_bajo.length > 0" />
       </div>
@@ -63,6 +58,8 @@
 
 <script setup lang="ts">
 const { fmt } = useFmt()
+
+useSeoMeta({ title: 'Dashboard' })
 
 const { data: raw, pending: cargando, refresh: cargar } = await useFetch('/api/dashboard/resumen')
 const data = computed(() => raw.value?.data ?? null)

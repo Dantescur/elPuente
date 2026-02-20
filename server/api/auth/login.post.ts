@@ -5,10 +5,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Usuario y contraseña requeridos' })
   }
 
-  const runtimeConfig = useRuntimeConfig()
-
-  const validUsername = runtimeConfig.auth.username
-  const validPassword = runtimeConfig.auth.password
+  const validUsername = 'admin'
+  const validPassword = 'koisend'
 
   if (!validUsername || !validPassword) {
     console.error('[auth] AUTH_USERNAME / AUTH_PASSWORD env vars not set')

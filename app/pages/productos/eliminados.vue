@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const { data, refresh } = await useFetch('/api/productos/eliminados')
 
+useSeoMeta({ title: 'Productos Eliminados' })
+
 async function reactivar(id: number) {
   if (!confirm('¿Reactivar producto?')) return
 
@@ -20,10 +22,8 @@ async function reactivar(id: number) {
   <div class="p-6 space-y-4">
     <!-- Back button -->
     <div>
-      <NuxtLink
-        to="/productos"
-        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
-      >
+      <NuxtLink to="/productos"
+        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
         <Icon name="lucide:arrow-left" class="w-4 h-4" />
         Volver a productos
       </NuxtLink>
@@ -48,10 +48,7 @@ async function reactivar(id: number) {
         </div>
       </div>
 
-      <button
-        class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-md text-sm"
-        @click="reactivar(p.id)"
-      >
+      <button class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-md text-sm" @click="reactivar(p.id)">
         Reactivar
       </button>
     </div>
