@@ -80,7 +80,6 @@ import { icon } from '~/components/NativeIcon'
 const { loggedIn, session, clear } = useUserSession()
 
 async function logout() {
-  await $fetch('/api/auth/logout', { method: 'POST' })
   await clear()
   await navigateTo('/login')
 }
