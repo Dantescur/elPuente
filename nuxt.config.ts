@@ -10,6 +10,15 @@ export default defineNuxtConfig({
       tasks: true
     }
   },
+  runtimeConfig: {
+    session: {
+      password: 'QOkue9uTIVUsqXsw1VK8N3VLjJivUwW3Q7h2zDiXBOo=',
+    },
+    auth: {
+      username: 'admin',
+      password: '1234'
+    }
+  },
   modules: [
     '@nuxt/eslint',
     '@nuxt/hints',
